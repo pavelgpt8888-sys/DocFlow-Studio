@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Счёт на оплату</title>
+<!-- docflow
+name: Счёт на оплату
+description: Счёт A4: реквизиты, товары, НДС, сумма прописью
+icon: invoice
+page: a4
+-->
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 17mm 20mm;
+    @bottom-left {
+      content: "Демонстрационный документ. Все реквизиты вымышлены.";
+      font-family: "PT Sans", "Helvetica Neue", Arial, sans-serif;
+      font-size: 7.5pt;
+      color: #9A9FAB;
+    }
+    @bottom-right {
+      content: "Страница " counter(page) " из " counter(pages);
+      font-family: "PT Sans", "Helvetica Neue", Arial, sans-serif;
+      font-size: 7.5pt;
+      color: #9A9FAB;
+    }
+  }
+  * { box-sizing: border-box; }
+  html {
+    font-family: "PT Sans", "Helvetica Neue", Arial, sans-serif;
+    font-size: 9.6pt;
+    line-height: 1.45;
+    color: #171923;
+    font-variant-numeric: tabular-nums;
+  }
+  body { margin: 0; }
+  table { border-collapse: collapse; width: 100%; }
+  .muted { color: #717784; }
+  .label {
+    font-size: 7.4pt;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #717784;
+    font-weight: 700;
+  }
+
+  /* Шапка */
+  .head td { vertical-align: top; }
+  .brand-mark {
+    display: inline-block;
+    width: 11mm; height: 11mm;
+    border-radius: 3mm;
+    background: #5B5FEF;
+    color: #fff;
+    text-align: center;
+    line-height: 11mm;
+    font-weight: 700;
+    font-size: 12pt;
+    vertical-align: middle;
+  }
+  .brand-name {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 3mm;
+    font-size: 12.5pt;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .brand-name small {
+    display: block;
+    font-size: 8pt;
+    font-weight: 400;
+    color: #717784;
+  }
+  .doc-title {
+    text-align: right;
+  }
+  .doc-title h1 {
+    font-size: 21pt;
+    line-height: 1.1;
+    margin: 0 0 1.5mm;
+    letter-spacing: -0.01em;
+  }
+  .doc-title .number { font-size: 11pt; font-weight: 700; color: #5B5FEF; }
+
+  /* Банковские реквизиты */
+  .bank {
+    margin-top: 9mm;
+    border: 0.7pt solid #D9DCE3;
+  }
+  .bank td {
+    border: 0.7pt solid #D9DCE3;
+    padding: 1.8mm 2.6mm;
+    vertical-align: top;
+  }
+  .bank .label { display: block; margin-bottom: 0.4mm; }
+
+  /* Стороны */
+  .parties { margin-top: 7mm; }
+  .parties td { width: 50%; vertical-align: top; padding-right: 6mm; }
+  .party-name { font-weight: 700; font-size: 10.4pt; margin: 1mm 0 0.6mm; }
+
+  /* Позиции */
+  .items { margin-top: 8mm; }
+  .items thead th {
+    font-size: 7.4pt;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #717784;
+    text-align: left;
+    padding: 2.2mm 2mm;
+    border-bottom: 1pt solid #171923;
+  }
+  .items td {
+    padding: 2.4mm 2mm;
+    border-bottom: 0.6pt solid #E6E8ED;
+    vertical-align: top;
+  }
+  .items tr { page-break-inside: avoid; }
+  .items .num { text-align: right; white-space: nowrap; }
+  .items .pos { width: 8mm; color: #717784; }
+  .items .name { overflow-wrap: anywhere; hyphens: auto; }
+  .items .name small { display: block; color: #717784; }
+
+  /* Итоги */
+  .items .unit { width: 12mm; color: #717784; }
+  .basis { margin: 5mm 0 0; }
+  .summary { margin-top: 4mm; page-break-inside: avoid; }
+  .summary > tbody > tr > td { vertical-align: top; }
+  .totals-cell { width: 62%; }
+  .totals td { padding: 1.1mm 2mm; text-align: right; white-space: nowrap; }
+  .totals td:first-child { color: #4A4F5C; }
+  .totals .grand td {
+    border-top: 1pt solid #171923;
+    padding-top: 2.4mm;
+    font-size: 12.5pt;
+    font-weight: 700;
+    color: #171923;
+  }
+  .totals .grand td:last-child { color: #5B5FEF; }
+  .in-words {
+    margin-top: 6mm;
+    padding-top: 3mm;
+    border-top: 0.6pt solid #E6E8ED;
+    page-break-inside: avoid;
+  }
+  .in-words .words { font-weight: 700; margin-top: 0.8mm; }
+  .note {
+    margin-top: 5mm;
+    border-radius: 2mm;
+    background: #F4F5FF;
+    padding: 3mm 3.6mm;
+    font-size: 8.8pt;
+    page-break-inside: avoid;
+  }
+
+  /* Подписи */
+  .signs { margin-top: 16mm; page-break-inside: avoid; }
+  .signs td { width: 50%; padding-right: 10mm; }
+  .sign-line {
+    border-bottom: 0.7pt solid #171923;
+    height: 9mm;
+    margin-bottom: 1.2mm;
+  }
+</style>
+</head>
+<body>
+  <table class="head">
+    <tr>
+      <td>
+        <span class="brand-mark">DF</span>
+        <span class="brand-name">ООО «Облачный Горизонт»<small>Программные решения для бизнеса</small></span>
+      </td>
+      <td class="doc-title">
+        <h1>Счёт на оплату</h1>
+        <div class="number">№ {{ number }}</div>
+        <div class="muted">от {% if date %}{{ date|date_long }}{% else %}{{ today|date_long }}{% endif %}</div>
+      </td>
+    </tr>
+  </table>
+
+  <table class="bank">
+    <tr>
+      <td colspan="2" style="width:58%"><span class="label">Банк получателя</span>АО «Банк Демонстрационный», г. Северогорск</td>
+      <td><span class="label">БИК</span>000000000</td>
+    </tr>
+    <tr>
+      <td><span class="label">ИНН</span>0000000000</td>
+      <td><span class="label">КПП</span>000000000</td>
+      <td><span class="label">Расчётный счёт</span>40702 810 0 0000 0000000</td>
+    </tr>
+    <tr>
+      <td colspan="2"><span class="label">Получатель</span>ООО «Облачный Горизонт»</td>
+      <td><span class="label">Корр. счёт</span>30101 810 0 0000 0000000</td>
+    </tr>
+  </table>
+
+  <table class="parties">
+    <tr>
+      <td>
+        <div class="label">Поставщик (исполнитель)</div>
+        <div class="party-name">ООО «Облачный Горизонт»</div>
+        <div class="muted">ИНН 0000000000, КПП 000000000, г. Северогорск, пр. Примерный, 7, офис 301</div>
+      </td>
+      <td>
+        <div class="label">Покупатель (заказчик)</div>
+        <div class="party-name">{% if client.name %}{{ client.name }}{% else %}{{ client }}{% endif %}</div>
+        <div class="muted">{% if client.inn %}ИНН {{ client.inn }}{% if client.address %}, {% endif %}{% endif %}{{ client.address }}</div>
+      </td>
+    </tr>
+  </table>
+  {% if basis %}<p class="basis"><span class="muted">Основание:</span> {{ basis }}</p>{% endif %}
+
+  <table class="items">
+    <thead>
+      <tr>
+        <th class="pos">№</th>
+        <th>Товары (работы, услуги)</th>
+        <th class="num">Кол-во</th>
+        <th class="unit">Ед.</th>
+        <th class="num">Цена</th>
+        <th class="num">Сумма</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td class="pos">{{ loop.index }}</td>
+        <td class="name">{{ item.product }}{% if item.note %}<small>{{ item.note }}</small>{% endif %}</td>
+        <td class="num">{{ item.qty|number }}</td>
+        <td class="unit">{{ item.unit|default:"шт." }}</td>
+        <td class="num">{{ item.price|number:"2" }}</td>
+        <td class="num">{{ item.total|number:"2" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <table class="summary">
+    <tr>
+      <td></td>
+      <td class="totals-cell">
+        <table class="totals">
+          <tr><td>Итого:</td><td>{{ subtotal|number:"2" }}</td></tr>
+          {% if vat %}
+          {% if vat_included %}
+          <tr><td>В том числе НДС ({{ vat_rate|number }}%):</td><td>{{ vat|number:"2" }}</td></tr>
+          {% else %}
+          <tr><td>НДС ({{ vat_rate|number }}%):</td><td>{{ vat|number:"2" }}</td></tr>
+          {% endif %}
+          {% else %}
+          <tr><td>Без налога (НДС)</td><td>—</td></tr>
+          {% endif %}
+          <tr class="grand"><td>Всего к оплате:</td><td>{{ total|money }}</td></tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  <div class="in-words">
+    <div>Всего наименований {{ items_count }}, на сумму {{ total|number:"2" }} руб.</div>
+    <div class="words">{{ total|in_words }}</div>
+  </div>
+
+  <div class="note">
+    {% if due_date %}Оплатить не позднее {{ due_date|date_long }}{% else %}Счёт действителен в течение 5 банковских дней.{% endif %}
+    {% if comment %}<br>{{ comment }}{% endif %}
+  </div>
+
+  <table class="signs">
+    <tr>
+      <td>
+        <div class="sign-line"></div>
+        <div class="muted">Руководитель · А. Б. Демонстрационный</div>
+      </td>
+      <td>
+        <div class="sign-line"></div>
+        <div class="muted">Бухгалтер · В. Г. Примерова</div>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

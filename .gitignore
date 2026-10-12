@@ -1,0 +1,31 @@
+# Виртуальное окружение
+.venv/
+venv/
+env/
+
+# Кеш Python и инструментов
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Результаты генерации и пользовательские документы
+output/*
+!output/.gitkeep
+*.pdf
+user_data/
+
+# Секреты и локальные настройки
+.env
+.env.*
+*.key
+*.pem
+settings.local.json
+
+# Системные файлы
+.DS_Store
+.idea/
+.vscode/

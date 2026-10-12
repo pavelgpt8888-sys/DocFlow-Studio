@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Товарный чек</title>
+<!-- docflow
+name: Товарный чек
+description: Кассовая лента 80 мм: товар, количество, цена и итог
+icon: receipt
+page: receipt
+required: id, product, price, qty
+-->
+<style>
+  @page {
+    size: 80mm 128mm;
+    margin: 7mm 6mm 8mm;
+  }
+  * { box-sizing: border-box; }
+  html {
+    font-family: "PT Sans", "Helvetica Neue", Arial, sans-serif;
+    font-size: 8.4pt;
+    line-height: 1.38;
+    color: #171923;
+    font-variant-numeric: tabular-nums;
+  }
+  body { margin: 0; }
+
+  .brand {
+    text-align: center;
+    padding-bottom: 3.2mm;
+  }
+  .logo {
+    display: inline-block;
+    width: 8mm; height: 8mm;
+    border-radius: 2.2mm;
+    background: #5B5FEF;
+    color: #fff;
+    font-weight: 700;
+    font-size: 9pt;
+    line-height: 8mm;
+    margin-bottom: 1.6mm;
+  }
+  .seller {
+    font-size: 10.5pt;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .muted { color: #717784; }
+  .small { font-size: 7.2pt; }
+
+  .rule {
+    border: 0;
+    border-top: 0.6pt dashed #B9BDC7;
+    margin: 2.6mm 0;
+  }
+
+  .doc-title {
+    text-align: center;
+    font-size: 9.6pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 1mm;
+  }
+  .meta { width: 100%; border-collapse: collapse; }
+  .meta td { padding: 0.4mm 0; }
+  .meta td:last-child { text-align: right; }
+
+  .item-name {
+    font-weight: 700;
+    font-size: 9pt;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+    margin-bottom: 1mm;
+  }
+  .calc { width: 100%; border-collapse: collapse; }
+  .calc td { padding: 0.3mm 0; }
+  .calc td:last-child { text-align: right; white-space: nowrap; }
+
+  .total {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.6mm;
+  }
+  .total td {
+    font-size: 12.5pt;
+    font-weight: 700;
+    padding-top: 0.6mm;
+  }
+  .total td:last-child { text-align: right; white-space: nowrap; }
+
+  .notice {
+    margin-top: 4mm;
+    border: 0.7pt solid #171923;
+    border-radius: 1.6mm;
+    padding: 1.8mm 2mm;
+    text-align: center;
+    font-size: 7.4pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .thanks {
+    text-align: center;
+    margin-top: 3.4mm;
+  }
+</style>
+</head>
+<body>
+  <div class="brand">
+    <div class="logo">PM</div>
+    <div class="seller">{{ seller|default:"ООО «Пиксель Маркет»" }}</div>
+    <div class="muted small">г. Северогорск, ул. Вымышленная, 12</div>
+    <div class="muted small">ИНН 0000000000 · демонстрационные реквизиты</div>
+  </div>
+
+  <hr class="rule">
+
+  <p class="doc-title">Товарный чек № {{ id }}</p>
+  <table class="meta">
+    <tr>
+      <td class="muted">Дата</td>
+      <td>{% if date %}{{ date|date }}{% else %}{{ today|date }}{% endif %}</td>
+    </tr>
+    <tr>
+      <td class="muted">Кассир</td>
+      <td>{{ cashier|default:"Касса 1" }}</td>
+    </tr>
+  </table>
+
+  <hr class="rule">
+
+  <div class="item-name">{{ product }}</div>
+  <table class="calc">
+    <tr>
+      <td class="muted">{{ qty|number }} шт. × {{ price|money }}</td>
+      <td>{{ total|money }}</td>
+    </tr>
+  </table>
+
+  <hr class="rule">
+
+  <table class="total">
+    <tr>
+      <td>ИТОГО</td>
+      <td>{{ total|money }}</td>
+    </tr>
+  </table>
+  <table class="meta small">
+    <tr>
+      <td class="muted">Оплата</td>
+      <td>{{ payment|default:"Банковская карта" }}</td>
+    </tr>
+  </table>
+
+  <div class="notice">Демонстрационный нефискальный документ</div>
+  <div class="thanks muted small">Спасибо за покупку!</div>
+</body>
+</html>

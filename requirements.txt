@@ -1,0 +1,9 @@
+# Интерфейс: базовые модули Qt и QtPdf для предпросмотра.
+# Полный метапакет PySide6 не нужен — он тянет WebEngine (~250 МБ).
+PySide6-Essentials>=6.12
+PySide6-Pdf>=6.12
+# Генерация PDF (нужны системные библиотеки: brew install pango)
+weasyprint>=66
+# Тесты
+pytest>=8
+pypdf>=4
